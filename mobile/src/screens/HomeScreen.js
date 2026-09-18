@@ -4,17 +4,29 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>JIRI & Singify</Text>
-      <Text style={styles.subtitle}>Mobile Integration Prototype</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Welcome to JIRI</Text>
+        <Text style={styles.subtitle}>Select an activity below to get started.</Text>
+      </View>
       
-      <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('JIRI')}>
-        <Text style={styles.cardTitle}>JIRI Flow</Text>
-        <Text style={styles.cardDesc}>Morning Routine Assistance</Text>
+      <TouchableOpacity 
+        style={styles.actionButton} 
+        onPress={() => navigation.navigate('Games')}
+        accessibilityLabel="Go to Activities and Games"
+        accessibilityRole="button"
+      >
+        <Text style={styles.buttonTitle}>Go to Activities</Text>
+        <Text style={styles.buttonDesc}>Play games to exercise your memory.</Text>
       </TouchableOpacity>
       
-      <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Singify')}>
-        <Text style={styles.cardTitle}>Singify</Text>
-        <Text style={styles.cardDesc}>Karaoke & Cognitive Games</Text>
+      <TouchableOpacity 
+        style={[styles.actionButton, styles.secondaryButton]} 
+        onPress={() => navigation.navigate('Caregiver')}
+        accessibilityLabel="Go to Caregiver Dashboard"
+        accessibilityRole="button"
+      >
+        <Text style={styles.buttonTitle}>Caregiver Dashboard</Text>
+        <Text style={styles.buttonDesc}>View reports and history.</Text>
       </TouchableOpacity>
     </View>
   );
@@ -23,39 +35,48 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FDF6EC',
-    alignItems: 'center',
-    padding: 20,
+    backgroundColor: '#FFFDF7', // Warm, high-contrast background
+    padding: 24,
+  },
+  header: {
+    marginBottom: 40,
+    marginTop: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#0D6E6E',
-    marginTop: 40,
-    marginBottom: 5,
+    color: '#2A2A2A', // Dark charcoal for high WCAG AAA contrast
+    marginBottom: 12,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#4A4A4A',
-    marginBottom: 40,
-  },
-  card: {
-    backgroundColor: 'white',
-    width: '100%',
-    padding: 24,
-    borderRadius: 16,
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: '#F0D9B5',
-  },
-  cardTitle: {
     fontSize: 20,
+    color: '#424242',
+    lineHeight: 28,
+  },
+  actionButton: {
+    backgroundColor: '#FFFDF7',
+    padding: 24,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 3,
+    borderColor: '#00695C', // Deep teal, avoiding blue focus (AbilityNet)
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  secondaryButton: {
+    borderColor: '#616161',
+  },
+  buttonTitle: {
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#1A1A1A',
+    color: '#2A2A2A',
     marginBottom: 8,
   },
-  cardDesc: {
-    fontSize: 14,
-    color: '#666',
+  buttonDesc: {
+    fontSize: 18,
+    color: '#424242',
   }
 });
