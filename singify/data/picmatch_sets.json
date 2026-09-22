@@ -1,0 +1,37 @@
+{
+  "sets": [
+    {
+      "id": "pic_1_rhino",
+      "word": "গঁড়",
+      "translation": "Rhino",
+      "image_correct": "/art/picmatch/rhino.webp",
+      "distractors": [
+        "/art/picmatch/elephant.webp",
+        "/art/picmatch/tiger.webp",
+        "/art/picmatch/deer.webp"
+      ]
+    },
+    {
+      "id": "pic_2_tea",
+      "word": "চাহ বাগিচা",
+      "translation": "Tea Garden",
+      "image_correct": "/art/picmatch/tea_garden.webp",
+      "distractors": [
+        "/art/picmatch/rice_field.webp",
+        "/art/picmatch/forest.webp",
+        "/art/picmatch/river.webp"
+      ]
+    },
+    {
+      "id": "pic_3_boat",
+      "word": "নাও",
+      "translation": "Boat",
+      "image_correct": "/art/picmatch/boat.webp",
+      "distractors": [
+        "/art/picmatch/car.webp",
+        "/art/picmatch/bicycle.webp",
+        "/art/picmatch/train.webp"
+      ]
+    }
+  ]
+}

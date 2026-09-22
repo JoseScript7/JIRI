@@ -1,0 +1,316 @@
+{
+  "songs": [
+    {
+      "id": "song_01",
+      "title": "Bihugeet - Rongali Bihu",
+      "audio_file": "/audio/song_01.mp3",
+      "cover_art": "/art/song_01.jpeg",
+      "difficulty": "easy",
+      "lines": [
+        {
+          "line_id": "song_01_l1",
+          "start_sec": 22.0,
+          "end_sec": 29.5,
+          "full_text": "Axom desh mur matixi jai",
+          "blank_word": "matixi",
+          "blank_word_start_sec": 25.0,
+          "blank_word_end_sec": 26.2,
+          "distractor_options": ["jolali", "bonor", "phulor"]
+        },
+        {
+          "line_id": "song_01_l2",
+          "start_sec": 55.0,
+          "end_sec": 63.0,
+          "full_text": "Luit parore bagi bagi jai",
+          "blank_word": "bagi",
+          "blank_word_start_sec": 58.5,
+          "blank_word_end_sec": 59.8,
+          "distractor_options": ["nagi", "dagi", "ragi"]
+        },
+        {
+          "line_id": "song_01_l3",
+          "start_sec": 85.0,
+          "end_sec": 93.0,
+          "full_text": "Kopou phool fotiche baro",
+          "blank_word": "phool",
+          "blank_word_start_sec": 88.0,
+          "blank_word_end_sec": 89.2,
+          "distractor_options": ["gaan", "rong", "gach"]
+        }
+      ]
+    },
+    {
+      "id": "song_02",
+      "title": "Mur Sonapahar",
+      "audio_file": "/audio/song_02.mp3",
+      "cover_art": "/art/song_02.jpeg",
+      "difficulty": "medium",
+      "lines": [
+        {
+          "line_id": "song_02_l1",
+          "start_sec": 14.0,
+          "end_sec": 22.0,
+          "full_text": "Sonapahar mur aakhi mur mon",
+          "blank_word": "aakhi",
+          "blank_word_start_sec": 17.5,
+          "blank_word_end_sec": 18.8,
+          "distractor_options": ["mukh", "haat", "khoj"]
+        },
+        {
+          "line_id": "song_02_l2",
+          "start_sec": 44.0,
+          "end_sec": 52.0,
+          "full_text": "Hemanta ratit tarar alo",
+          "blank_word": "tarar",
+          "blank_word_start_sec": 47.5,
+          "blank_word_end_sec": 48.8,
+          "distractor_options": ["surjor", "xandhor", "jolali"]
+        },
+        {
+          "line_id": "song_02_l3",
+          "start_sec": 74.0,
+          "end_sec": 82.0,
+          "full_text": "Bihali xapun moi dekhu pahu",
+          "blank_word": "xapun",
+          "blank_word_start_sec": 77.5,
+          "blank_word_end_sec": 78.8,
+          "distractor_options": ["nindra", "khela", "gaan"]
+        }
+      ]
+    },
+    {
+      "id": "song_03",
+      "title": "Joi Aai Axom",
+      "audio_file": "/audio/song_03.mp3",
+      "cover_art": "/art/song_03.jpeg",
+      "difficulty": "easy",
+      "lines": [
+        {
+          "line_id": "song_03_l1",
+          "start_sec": 5.0,
+          "end_sec": 13.5,
+          "full_text": "Joi aai Axom mur matr bhoomi",
+          "blank_word": "matr",
+          "blank_word_start_sec": 9.0,
+          "blank_word_end_sec": 10.2,
+          "distractor_options": ["pita", "pran", "desh"]
+        },
+        {
+          "line_id": "song_03_l2",
+          "start_sec": 35.0,
+          "end_sec": 43.0,
+          "full_text": "Brahmaputra tire dekhi jai",
+          "blank_word": "tire",
+          "blank_word_start_sec": 38.5,
+          "blank_word_end_sec": 39.5,
+          "distractor_options": ["ghar", "buke", "mukhe"]
+        },
+        {
+          "line_id": "song_03_l3",
+          "start_sec": 65.0,
+          "end_sec": 73.0,
+          "full_text": "Hatikheda nadir paani nihali",
+          "blank_word": "nihali",
+          "blank_word_start_sec": 69.5,
+          "blank_word_end_sec": 71.0,
+          "distractor_options": ["xunilu", "bhabi", "khedi"]
+        }
+      ]
+    },
+    {
+      "id": "song_04",
+      "title": "Bihu Naam - Rangali",
+      "audio_file": "/audio/song_04.mp3",
+      "cover_art": "/art/song_04.jpeg",
+      "difficulty": "easy",
+      "lines": [
+        {
+          "line_id": "song_04_l1",
+          "start_sec": 14.0,
+          "end_sec": 22.0,
+          "full_text": "Mur gaaon mur mati mur pran",
+          "blank_word": "pran",
+          "blank_word_start_sec": 18.5,
+          "blank_word_end_sec": 19.5,
+          "distractor_options": ["mon", "deh", "naam"]
+        },
+        {
+          "line_id": "song_04_l2",
+          "start_sec": 44.0,
+          "end_sec": 52.0,
+          "full_text": "Kopili nadir dheu suni jai",
+          "blank_word": "dheu",
+          "blank_word_start_sec": 48.0,
+          "blank_word_end_sec": 49.0,
+          "distractor_options": ["paani", "rongali", "geet"]
+        },
+        {
+          "line_id": "song_04_l3",
+          "start_sec": 75.0,
+          "end_sec": 83.0,
+          "full_text": "Phool phulile bogi bogi jai",
+          "blank_word": "phulile",
+          "blank_word_start_sec": 78.5,
+          "blank_word_end_sec": 80.0,
+          "distractor_options": ["tarsilu", "gaalile", "khulile"]
+        }
+      ]
+    },
+    {
+      "id": "song_05",
+      "title": "O Mur Apunar Desh",
+      "audio_file": "/audio/song_05.mp3",
+      "cover_art": "/art/song_05.jpeg",
+      "difficulty": "easy",
+      "lines": [
+        {
+          "line_id": "song_05_l1",
+          "start_sec": 13.0,
+          "end_sec": 21.0,
+          "full_text": "O mur apunar desh mur Axom",
+          "blank_word": "apunar",
+          "blank_word_start_sec": 16.5,
+          "blank_word_end_sec": 17.8,
+          "distractor_options": ["bonor", "xundor", "monor"]
+        },
+        {
+          "line_id": "song_05_l2",
+          "start_sec": 38.0,
+          "end_sec": 46.0,
+          "full_text": "Bahi jai Luit noi tomar buke",
+          "blank_word": "buke",
+          "blank_word_start_sec": 43.0,
+          "blank_word_end_sec": 44.2,
+          "distractor_options": ["muke", "ruke", "dhuke"]
+        },
+        {
+          "line_id": "song_05_l3",
+          "start_sec": 62.0,
+          "end_sec": 70.0,
+          "full_text": "Xobujiya bon mur hiyar taan",
+          "blank_word": "xobujiya",
+          "blank_word_start_sec": 63.5,
+          "blank_word_end_sec": 65.2,
+          "distractor_options": ["sundariya", "maliya", "nandiya"]
+        }
+      ]
+    },
+    {
+      "id": "song_06",
+      "title": "Mur Axomiya Gaan",
+      "audio_file": "/audio/song_06.mp3",
+      "cover_art": "/art/song_06.jpeg",
+      "difficulty": "medium",
+      "lines": [
+        {
+          "line_id": "song_06_l1",
+          "start_sec": 15.0,
+          "end_sec": 23.0,
+          "full_text": "Axomiya muk bhal lage bhaat",
+          "blank_word": "bhaat",
+          "blank_word_start_sec": 20.0,
+          "blank_word_end_sec": 21.2,
+          "distractor_options": ["maan", "gaan", "khaan"]
+        },
+        {
+          "line_id": "song_06_l2",
+          "start_sec": 55.0,
+          "end_sec": 63.0,
+          "full_text": "Gamusa diyo phool tuli diyo",
+          "blank_word": "phool",
+          "blank_word_start_sec": 58.5,
+          "blank_word_end_sec": 59.5,
+          "distractor_options": ["gaan", "rang", "gach"]
+        },
+        {
+          "line_id": "song_06_l3",
+          "start_sec": 95.0,
+          "end_sec": 103.0,
+          "full_text": "Naam korite bhakti mone jai",
+          "blank_word": "bhakti",
+          "blank_word_start_sec": 98.5,
+          "blank_word_end_sec": 99.8,
+          "distractor_options": ["xakti", "rakti", "mukti"]
+        }
+      ]
+    },
+    {
+      "id": "song_07",
+      "title": "Bhaona Geet",
+      "audio_file": "/audio/song_07.mp3",
+      "cover_art": "/art/song_07.jpeg",
+      "difficulty": "hard",
+      "lines": [
+        {
+          "line_id": "song_07_l1",
+          "start_sec": 18.0,
+          "end_sec": 26.0,
+          "full_text": "Ram naam saar e xamsaar",
+          "blank_word": "naam",
+          "blank_word_start_sec": 21.5,
+          "blank_word_end_sec": 22.5,
+          "distractor_options": ["kaam", "daam", "taam"]
+        },
+        {
+          "line_id": "song_07_l2",
+          "start_sec": 56.0,
+          "end_sec": 64.0,
+          "full_text": "Hari guno gao muk sange loi",
+          "blank_word": "guno",
+          "blank_word_start_sec": 59.5,
+          "blank_word_end_sec": 60.5,
+          "distractor_options": ["duno", "muno", "runo"]
+        },
+        {
+          "line_id": "song_07_l3",
+          "start_sec": 98.0,
+          "end_sec": 106.0,
+          "full_text": "Satsang kori jai moi prabhu",
+          "blank_word": "satsang",
+          "blank_word_start_sec": 99.5,
+          "blank_word_end_sec": 101.2,
+          "distractor_options": ["kirtan", "bhajan", "prarthana"]
+        }
+      ]
+    },
+    {
+      "id": "song_08",
+      "title": "Jikir - Axomiya Sufi",
+      "audio_file": "/audio/song_08.mp3",
+      "cover_art": "/art/song_08.jpeg",
+      "difficulty": "medium",
+      "lines": [
+        {
+          "line_id": "song_08_l1",
+          "start_sec": 12.0,
+          "end_sec": 20.0,
+          "full_text": "Allah naam lo bhai xobe",
+          "blank_word": "xobe",
+          "blank_word_start_sec": 17.0,
+          "blank_word_end_sec": 18.2,
+          "distractor_options": ["lobe", "kobe", "jobe"]
+        },
+        {
+          "line_id": "song_08_l2",
+          "start_sec": 40.0,
+          "end_sec": 48.0,
+          "full_text": "Moner angan phulai rakhibo",
+          "blank_word": "phulai",
+          "blank_word_start_sec": 43.5,
+          "blank_word_end_sec": 44.8,
+          "distractor_options": ["dulai", "julai", "kulai"]
+        },
+        {
+          "line_id": "song_08_l3",
+          "start_sec": 68.0,
+          "end_sec": 76.0,
+          "full_text": "Doya kori mor dil khulibo",
+          "blank_word": "doya",
+          "blank_word_start_sec": 69.5,
+          "blank_word_end_sec": 70.8,
+          "distractor_options": ["moya", "koya", "toya"]
+        }
+      ]
+    }
+  ]
+}

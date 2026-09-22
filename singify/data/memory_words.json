@@ -1,0 +1,74 @@
+{
+  "sets": [
+    {
+      "id": "set_1_nature",
+      "words": [
+        {
+          "word": "পানী",
+          "translation": "Water",
+          "language": "as",
+          "audio": "/audio/memory/pani.mp3"
+        },
+        {
+          "word": "গছ",
+          "translation": "Tree",
+          "language": "as",
+          "audio": "/audio/memory/gos.mp3"
+        },
+        {
+          "word": "Sky",
+          "translation": "Sky",
+          "language": "en",
+          "audio": "/audio/memory/sky.mp3"
+        },
+        {
+          "word": "ফুল",
+          "translation": "Flower",
+          "language": "as",
+          "audio": "/audio/memory/ful.mp3"
+        },
+        {
+          "word": "River",
+          "translation": "River",
+          "language": "en",
+          "audio": "/audio/memory/river.mp3"
+        }
+      ]
+    },
+    {
+      "id": "set_2_home",
+      "words": [
+        {
+          "word": "ঘৰ",
+          "translation": "House",
+          "language": "as",
+          "audio": "/audio/memory/ghor.mp3"
+        },
+        {
+          "word": "Table",
+          "translation": "Table",
+          "language": "en",
+          "audio": "/audio/memory/table.mp3"
+        },
+        {
+          "word": "বিচনা",
+          "translation": "Bed",
+          "language": "as",
+          "audio": "/audio/memory/bisona.mp3"
+        },
+        {
+          "word": "দুৱাৰ",
+          "translation": "Door",
+          "language": "as",
+          "audio": "/audio/memory/duwar.mp3"
+        },
+        {
+          "word": "Chair",
+          "translation": "Chair",
+          "language": "en",
+          "audio": "/audio/memory/chair.mp3"
+        }
+      ]
+    }
+  ]
+}
