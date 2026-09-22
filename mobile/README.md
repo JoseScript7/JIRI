@@ -5,6 +5,7 @@ This is an Expo React Native application that wraps the **JIRI Flow** and **Sing
 ## Architecture
 
 To rapidly prototype the unified mobile experience, this app uses `react-native-webview` to embed the local web interfaces served by the respective backends:
+
 1. **JIRI Flow**: Native UI wrapping the configuration and routing logic.
 2. **Singify**: The interactive Karaoke and Cognitive Games hub.
 3. **Caregiver Dashboard**: A unified timeline merging physical routine signals (from JIRI Flow) and cognitive signals (from Singify).
