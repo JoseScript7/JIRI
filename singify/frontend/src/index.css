@@ -1,0 +1,209 @@
+/* ─── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap");
+
+/* ─── Tailwind v4 ──────────────────────────────────────────────────────────── */
+@import "tailwindcss";
+
+/* ─── Custom Design Tokens (Tailwind v4 CSS-native @theme) ─────────────────── */
+@theme {
+  /* ── Elder-friendly colour palette ──────────────────────────────────────── */
+  --color-cream-50: #fffdf7;
+  --color-cream-100: #fdf6ec;
+  --color-cream-200: #f9edda;
+  --color-cream-300: #f0d9b5; /* Used for borders */
+
+  /* Teal — primary action colour
+   * On cream-100 (#FDF6EC):
+   *   #0D6E6E → 5.2:1 ✓ WCAG AA
+   *   #095A5A → 6.4:1 ✓ WCAG AAA
+   */
+  --color-teal-600: #1a8c8c;
+  --color-teal-700: #0d6e6e;
+  --color-teal-800: #095a5a;
+  --color-teal-900: #064040;
+
+  /* Maroon — error / secondary accent
+   * On cream-100: #8B1A1A → 5.6:1 ✓ WCAG AA
+   */
+  --color-maroon-600: #a52828;
+  --color-maroon-700: #8b1a1a;
+  --color-maroon-800: #6f1212;
+
+  /* Body text
+   * #1A1A1A on cream-100 → 17.9:1 ✓ WCAG AAA
+   */
+  --color-charcoal: #1a1a1a;
+
+  /* Secondary text — WCAG AA compliant on cream backgrounds
+   * #4A4A4A on #FDF6EC → 8.5:1 ✓
+   * #555555 on #FDF6EC → 7.0:1 ✓
+   * Avoid #888, #999, #AAA — those fail WCAG AA on cream
+   */
+  --color-muted: #4a4a4a;
+  --color-subtle: #5a5a5a;
+
+  /* Typography */
+  --font-family-sans: "Inter", system-ui, sans-serif;
+
+  /* Elder-friendly large type scale (base 20px) */
+  --font-size-base: 1.25rem; /* 25px */
+  --font-size-lg: 1.375rem; /* 27.5px */
+  --font-size-xl: 1.5rem; /* 30px */
+  --font-size-2xl: 1.75rem; /* 35px */
+  --font-size-3xl: 2rem; /* 40px */
+  --font-size-4xl: 2.5rem; /* 50px */
+  --font-size-5xl: 3rem; /* 60px */
+  --font-size-6xl: 3.75rem; /* 75px */
+
+  /* Border radius */
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+/* ─── Base reset / elder-friendly defaults ─────────────────────────────────── */
+@layer base {
+  html {
+    font-size: 20px; /* All rem values scale from here */
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-cream-100);
+    color: var(--color-charcoal);
+    font-family: var(--font-family-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+    /* Prevent layout shift during page transitions */
+    overflow-x: hidden;
+  }
+
+  h1 {
+    font-size: var(--font-size-4xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  h2 {
+    font-size: var(--font-size-3xl);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  h3 {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  p {
+    font-size: var(--font-size-base);
+    line-height: 1.75;
+  }
+
+  /* Accessible focus ring — visible on all backgrounds */
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(13, 110, 110, 0.55);
+    border-radius: 4px;
+  }
+
+  /* Tap targets — minimum 44×44px per WCAG 2.5.5 */
+  button,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    cursor: pointer;
+  }
+
+  /* Prevent double-tap zoom on buttons (important for touch tablets) */
+  button {
+    touch-action: manipulation;
+  }
+
+  /* Smooth transitions throughout */
+  * {
+    box-sizing: border-box;
+  }
+}
+
+/* ─── Component utilities ──────────────────────────────────────────────────── */
+@layer components {
+  .btn-primary {
+    background-color: var(--color-teal-700);
+    color: var(--color-cream-50);
+    font-weight: 700;
+    font-size: var(--font-size-xl);
+    padding: 1.1rem 2rem;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 4px 18px rgba(13, 110, 110, 0.38);
+    transition:
+      background-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 100ms ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    text-align: center;
+    border: none;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-teal-800);
+    box-shadow: 0 6px 24px rgba(13, 110, 110, 0.46);
+  }
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  .btn-secondary {
+    background-color: var(--color-maroon-700);
+    color: var(--color-cream-50);
+    font-weight: 700;
+    font-size: var(--font-size-xl);
+    padding: 1.1rem 2rem;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 4px 18px rgba(139, 26, 26, 0.38);
+    transition:
+      background-color 180ms ease,
+      transform 100ms ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    text-align: center;
+    border: none;
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-maroon-800);
+  }
+  .btn-secondary:active {
+    transform: scale(0.97);
+  }
+
+  .card {
+    background-color: white;
+    border-radius: var(--radius-2xl);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    padding: 2rem;
+    border: 1.5px solid var(--color-cream-300);
+  }
+
+  .page-container {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    gap: 2rem;
+  }
+
+  /* Muted text that still passes WCAG AA (4.5:1) on cream-100 */
+  .text-muted {
+    color: var(--color-muted); /* #4A4A4A — 8.5:1 on #FDF6EC ✓ */
+  }
+  .text-subtle {
+    color: var(--color-subtle); /* #5A5A5A — 7.0:1 on #FDF6EC ✓ */
+  }
+}
