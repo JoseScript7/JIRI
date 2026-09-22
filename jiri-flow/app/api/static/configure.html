@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure JIRI Flow Routine</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f9f9f9; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { border-bottom: 2px solid #0070f3; padding-bottom: 10px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .step-card { border: 1px solid #eee; padding: 15px; border-radius: 4px; margin-bottom: 15px; background: #fafafa; }
+        .step-card h3 { margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
+        .remove-btn { background: #ff4d4f; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .remove-btn:hover { background: #cf1322; }
+        select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .btn { background: #0070f3; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .btn:hover { background: #0051a8; }
+        .btn-secondary { background: #eaeaea; color: #333; margin-top: 10px; }
+        .btn-secondary:hover { background: #ccc; }
+        #message { margin-top: 20px; padding: 10px; border-radius: 4px; display: none; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>Configure Caregiver Routine</h1>
+    <p>Set up a new task sequence for JIRI Flow to track.</p>
+
+    <div class="card">
+        <form id="routineForm">
+            <div class="form-group">
+                <label for="routineId">Routine ID (e.g., rt_evening_meds_01):</label>
+                <input type="text" id="routineId" required placeholder="rt_new_routine_01">
+            </div>
+            <div class="form-group">
+                <label for="routineName">Routine Name:</label>
+                <input type="text" id="routineName" required placeholder="Evening Medication">
+            </div>
+
+            <h2>Steps</h2>
+            <div id="stepsContainer"></div>
+
+            <button type="button" class="btn btn-secondary" onclick="addStep()">+ Add Step</button>
+            
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+            
+            <button type="submit" class="btn">Save Routine</button>
+        </form>
+    </div>
+
+    <div id="message"></div>
+
+    <script>
+        const availableObjects = ["kettle", "cup", "spoon", "medication box", "bottle", "bowl", "person"];
+        let stepCount = 0;
+
+        function addStep() {
+            stepCount++;
+            const id = `step_node_${stepCount}`;
+            
+            const options = availableObjects.map(obj => `<option value="${obj}">${obj}</option>`).join("");
+            
+            const html = `
+                <div class="step-card" id="${id}">
+                    <h3>Step ${stepCount} <button type="button" class="remove-btn" onclick="document.getElementById('${id}').remove()">Remove</button></h3>
+                    <div class="form-group">
+                        <label>Instruction / Step Name (e.g., 'fill kettle'):</label>
+                        <input type="text" class="step-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Required Object (Detector Target):</label>
+                        <select class="step-object" multiple size="4" required>
+                            ${options}
+                        </select>
+                        <small style="color: #666; display: block; margin-top: 5px;">Hold Ctrl/Cmd to select multiple objects if needed.</small>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('stepsContainer').insertAdjacentHTML('beforeend', html);
+        }
+
+        document.getElementById('routineForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const routineId = document.getElementById('routineId').value;
+            const routineName = document.getElementById('routineName').value;
+            
+            const stepNodes = document.querySelectorAll('.step-card');
+            if (stepNodes.length === 0) {
+                showMessage("Please add at least one step.", "error");
+                return;
+            }
+            
+            const steps = [];
+            stepNodes.forEach((node) => {
+                const name = node.querySelector('.step-name').value;
+                const select = node.querySelector('.step-object');
+                const objects = Array.from(select.selectedOptions).map(opt => opt.value);
+                
+                steps.push({
+                    name: name,
+                    required_objects: objects
+                });
+            });
+            
+            const payload = {
+                id: routineId,
+                name: routineName,
+                steps: steps
+            };
+            
+            try {
+                const response = await fetch('/api/routine', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(`Success! Routine saved to ${data.file}`, "success");
+                    // Reset form
+                    document.getElementById('routineForm').reset();
+                    document.getElementById('stepsContainer').innerHTML = '';
+                    stepCount = 0;
+                    addStep(); // Add first empty step back
+                } else {
+                    showMessage("Error saving routine.", "error");
+                }
+            } catch (err) {
+                showMessage(`Network error: ${err.message}`, "error");
+            }
+        });
+
+        function showMessage(msg, type) {
+            const el = document.getElementById('message');
+            el.textContent = msg;
+            el.className = type;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
+
+        // Add initial step
+        addStep();
+    </script>
+</body>
+</html>

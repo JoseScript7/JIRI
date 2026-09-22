@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Caregiver Dashboard — JIRI Flow + Singify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
+            --accent-pink: #ec4899;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text-primary);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .container { width: 100%; max-width: 1100px; }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #38bdf8, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.4rem;
+        }
+
+        p.subtitle { color: var(--text-secondary); font-size: 1rem; }
+
+        /* ── Status pills ── */
+        .status-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #6b7280;
+            transition: background 0.3s;
+        }
+        .dot.online  { background: #10b981; box-shadow: 0 0 6px #10b981; }
+        .dot.offline { background: #ef4444; }
+
+        /* ── Timeline container ── */
+        .timeline-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            min-height: 400px;
+        }
+
+        .timeline-header {
+            display: grid;
+            grid-template-columns: 100px 90px 180px 1fr;
+            gap: 1rem;
+            padding: 0 1.5rem 0.75rem;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .timeline { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem; }
+
+        .timeline-event {
+            display: grid;
+            grid-template-columns: 100px 90px 180px 1fr;
+            gap: 1rem;
+            align-items: center;
+            padding: 0.9rem 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s, background 0.2s;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .timeline-event:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        /* source tinting */
+        .timeline-event.src-singify { border-left: 3px solid var(--accent-pink); }
+        .timeline-event.src-jiri    { border-left: 3px solid var(--accent-blue); }
+
+        .time {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* source badge */
+        .source-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            width: max-content;
+        }
+        .source-badge.src-jiri    { background: rgba(59,130,246,0.2);  color: #93c5fd; border: 1px solid rgba(59,130,246,0.4); }
+        .source-badge.src-singify { background: rgba(236,72,153,0.2);  color: #f9a8d4; border: 1px solid rgba(236,72,153,0.4); }
+
+        /* event type badge */
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            width: max-content;
+            white-space: nowrap;
+        }
+
+        /* JIRI event colours */
+        .type-ROUTINE_STARTED, .type-ROUTINE_COMPLETED { background: rgba(59,130,246,0.2); color: #93c5fd; border: 1px solid rgba(59,130,246,0.4); }
+        .type-STEP_STARTED, .type-STEP_COMPLETED       { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4); }
+        .type-CUE_GENERATED, .type-CUE_RETRY           { background: rgba(139,92,246,0.2); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.4); }
+        .type-STUCK_DETECTED                            { background: rgba(239,68,68,0.2);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); }
+        .type-MIC_HELP_REQUEST                          { background: rgba(245,158,11,0.2); color: #fcd34d; border: 1px solid rgba(245,158,11,0.4); }
+        /* Singify event colours */
+        .type-SINGIFY_SUMMARY  { background: rgba(236,72,153,0.2); color: #f9a8d4; border: 1px solid rgba(236,72,153,0.4); }
+        .type-SESSION_LATENCY  { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+        .type-SESSION_ACCURACY { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+        .type-HARDEST_WORD     { background: rgba(239,68,68,0.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+
+        .details {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .no-events {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 3rem;
+            font-size: 1.05rem;
+        }
+
+        /* filter bar */
+        .filter-bar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .filter-btn {
+            padding: 0.35rem 0.9rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            border-color: rgba(255,255,255,0.35);
+        }
+        .filter-btn.active { border-color: var(--accent-blue); color: #93c5fd; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 700px) {
+            .timeline-event, .timeline-header {
+                grid-template-columns: 1fr;
+                gap: 0.3rem;
+            }
+            .time { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Unified Caregiver Dashboard</h1>
+        <p class="subtitle">JIRI Flow · Routine Assistance &nbsp;+&nbsp; Singify · Karaoke Cognitive Training</p>
+    </header>
+
+    <div class="status-bar">
+        <div class="status-pill">
+            <span class="dot" id="dot-jiri"></span>
+            <span>JIRI Flow (port 8000)</span>
+        </div>
+        <div class="status-pill">
+            <span class="dot" id="dot-singify"></span>
+            <span>Singify (port 4000)</span>
+        </div>
+        <div class="status-pill" id="event-count-pill">0 events</div>
+    </div>
+
+    <div class="timeline-container">
+        <div class="filter-bar">
+            <button class="filter-btn active" id="btn-all"      onclick="setFilter('all')">All Sources</button>
+            <button class="filter-btn"        id="btn-jiri"     onclick="setFilter('jiri')">JIRI Flow</button>
+            <button class="filter-btn"        id="btn-singify"  onclick="setFilter('singify')">Singify</button>
+        </div>
+
+        <div class="timeline-header">
+            <span>Time</span>
+            <span>Source</span>
+            <span>Event</span>
+            <span>Details</span>
+        </div>
+
+        <div id="timeline" class="timeline">
+            <div class="no-events">Waiting for events from either system…</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const timeline   = document.getElementById('timeline');
+    const dotJiri    = document.getElementById('dot-jiri');
+    const dotSingify = document.getElementById('dot-singify');
+    const countPill  = document.getElementById('event-count-pill');
+    let lastDataStr  = '';
+    let currentFilter = 'all';
+
+    const JIRI_LOG_URL    = '/log';
+    const SINGIFY_URL     = 'http://localhost:4000/api/caregiver/report';
+    const INGEST_URL      = '/ingest_report';
+
+    function formatTime(isoString) {
+        const d = new Date(isoString);
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function setFilter(f) {
+        currentFilter = f;
+        ['all','jiri','singify'].forEach(k => {
+            document.getElementById('btn-' + k).classList.toggle('active', k === f);
+        });
+        renderLogs(lastParsedLogs);
+    }
+
+    let lastParsedLogs = [];
+
+    function renderLogs(logs) {
+        lastParsedLogs = logs;
+        const filtered = currentFilter === 'all' ? logs : logs.filter(l => l.source === currentFilter);
+
+        countPill.textContent = `${logs.length} events`;
+
+        if (filtered.length === 0) {
+            timeline.innerHTML = '<div class="no-events">No events match this filter.</div>';
+            return;
+        }
+
+        timeline.innerHTML = '';
+        filtered.forEach((log, idx) => {
+            const src = (log.source || 'jiri').toLowerCase();
+            const div = document.createElement('div');
+            div.className = `timeline-event src-${src}`;
+            div.style.animationDelay = `${idx * 0.04}s`;
+
+            const timeEl = document.createElement('div');
+            timeEl.className = 'time';
+            timeEl.textContent = formatTime(log.timestamp);
+
+            const srcEl = document.createElement('div');
+            const srcBadge = document.createElement('span');
+            srcBadge.className = `source-badge src-${src}`;
+            srcBadge.textContent = src;
+            srcEl.appendChild(srcBadge);
+
+            const typeEl = document.createElement('div');
+            const typeBadge = document.createElement('span');
+            typeBadge.className = `badge type-${log.event_type}`;
+            typeBadge.textContent = log.event_type.replace(/_/g, ' ');
+            typeEl.appendChild(typeBadge);
+
+            const detailsEl = document.createElement('div');
+            detailsEl.className = 'details';
+            detailsEl.title     = log.details;
+            detailsEl.textContent = log.details;
+
+            div.appendChild(timeEl);
+            div.appendChild(srcEl);
+            div.appendChild(typeEl);
+            div.appendChild(detailsEl);
+            timeline.appendChild(div);
+        });
+    }
+
+    async function fetchAndMerge() {
+        // 1. Fetch Singify report and push it to JIRI Flow's ingest endpoint
+        try {
+            const singifyRes = await fetch(SINGIFY_URL, { signal: AbortSignal.timeout(2000) });
+            if (singifyRes.ok) {
+                dotSingify.className = 'dot online';
+                const report = await singifyRes.json();
+                // Best-effort push to ingest; fire and forget
+                fetch(INGEST_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(report),
+                }).catch(() => {});
+            } else {
+                dotSingify.className = 'dot offline';
+            }
+        } catch {
+            dotSingify.className = 'dot offline';
+        }
+
+        // 2. Fetch the unified JIRI Flow log (includes merged Singify events)
+        try {
+            const logRes = await fetch(JIRI_LOG_URL);
+            if (!logRes.ok) { dotJiri.className = 'dot offline'; return; }
+            dotJiri.className = 'dot online';
+
+            const logs = await logRes.json();
+            const dataStr = JSON.stringify(logs);
+            if (dataStr === lastDataStr) return;   // nothing changed
+            lastDataStr = dataStr;
+
+            renderLogs(logs);
+        } catch {
+            dotJiri.className = 'dot offline';
+        }
+    }
+
+    fetchAndMerge();
+    setInterval(fetchAndMerge, 2000);
+</script>
+</body>
+</html>
