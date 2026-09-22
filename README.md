@@ -134,15 +134,6 @@ npm run start
 
 ---
 
-## Team — CyberPhantoms
-
-- **Ranen Joseph Solomon**
-- **Jaiyantan**
-- **Thirumurugan**
-- **Kabelan**
-
----
-
 ## License
 
 Released under the [MIT License](mobile/LICENSE) © 2026 CyberPhantoms.
