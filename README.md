@@ -8,7 +8,7 @@
 
 JIRI is a comprehensive ecosystem designed for dementia care and elder assistance. Running primarily on edge devices, it combines real-time vision and speech intelligence with interactive music and cognitive games to provide gentle, non-intrusive guidance through daily routines.
 
-<sub>Built by **CyberPhantoms** for the Snapdragon / Qualcomm AI Hub Challenge</sub>
+<sub>Built by **CyberPhantoms** for the SIH 2k26</sub>
 
 </div>
 
