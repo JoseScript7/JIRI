@@ -1,0 +1,69 @@
+{
+  "sets": [
+    {
+      "id": "set1",
+      "words": [
+        {
+          "word": "APPLE",
+          "translation": "আপেল",
+          "language": "en",
+          "audio": ""
+        },
+        {
+          "word": "DOG",
+          "translation": "কুকুৰ",
+          "language": "en",
+          "audio": ""
+        },
+        {
+          "word": "TABLE",
+          "translation": "মেজ",
+          "language": "en",
+          "audio": ""
+        },
+        {
+          "word": "CHAIR",
+          "translation": "চকী",
+          "language": "en",
+          "audio": ""
+        },
+        {
+          "word": "CAT",
+          "translation": "মেকুৰী",
+          "language": "en",
+          "audio": ""
+        }
+      ]
+    },
+    {
+      "id": "set2",
+      "words": [
+        {
+          "word": "BIRD",
+          "translation": "চৰাই",
+          "language": "en",
+          "audio": ""
+        },
+        {
+          "word": "SUN",
+          "translation": "সূৰ্য",
+          "language": "en",
+          "audio": ""
+        },
+        {
+          "word": "MOON",
+          "translation": "চন্দ্ৰ",
+          "language": "en",
+          "audio": ""
+        },
+        {
+          "word": "RIVER",
+          "translation": "নদী",
+          "language": "en",
+          "audio": ""
+        },
+        { "word": "TREE", "translation": "গছ", "language": "en", "audio": "" }
+      ]
+    }
+  ]
+}

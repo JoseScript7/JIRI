@@ -1,0 +1,25 @@
+{
+  "sets": [
+    {
+      "word": "সূৰ্য (Sun)",
+      "image_correct": "https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?w=200&h=200&fit=crop",
+      "distractors": [
+        "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=200&h=200&fit=crop"
+      ]
+    },
+    {
+      "word": "গছ (Tree)",
+      "image_correct": "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=200&h=200&fit=crop",
+      "distractors": [
+        "https://images.unsplash.com/photo-1497215848143-69d6c7b952cc?w=200&h=200&fit=crop"
+      ]
+    },
+    {
+      "word": "নদী (River)",
+      "image_correct": "https://images.unsplash.com/photo-1437482078695-73f5af6ec8ce?w=200&h=200&fit=crop",
+      "distractors": [
+        "https://images.unsplash.com/photo-1506744626753-1fa7604d459a?w=200&h=200&fit=crop"
+      ]
+    }
+  ]
+}
