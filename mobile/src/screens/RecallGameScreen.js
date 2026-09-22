@@ -1,234 +1,245 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
-import { Audio } from 'expo-av';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  SafeAreaView,
+} from "react-native";
+import { Colors, Typography, Spacing, Layout } from "../utils/DesignSystem";
+import { JiriButton } from "../components/JiriButton";
+import { Feather, Ionicons } from "@expo/vector-icons";
 
-export default function RecallGameScreen() {
-  const [recording, setRecording] = useState();
-  const [isRecording, setIsRecording] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [result, setResult] = useState(null);
-  
-  // Web-specific media recorder fallback
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [audioChunks, setAudioChunks] = useState([]);
+// Mock data
+const GAME_DATA = {
+  objectsToRemember: [
+    {
+      id: 1,
+      name: "Cup",
+      uri: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=200&h=200&fit=crop",
+    },
+    {
+      id: 2,
+      name: "Flower",
+      uri: "https://images.unsplash.com/photo-1490750967868-88cb4ecb0713?w=200&h=200&fit=crop",
+    },
+    {
+      id: 3,
+      name: "Drum",
+      uri: "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=200&h=200&fit=crop",
+    },
+  ],
+  options: [
+    { id: 1, name: "Cup" },
+    { id: 4, name: "Key" },
+    { id: 5, name: "Book" },
+  ],
+  targetAnswer: 1, // Cup
+};
 
-  useEffect(() => {
-    // Request permissions
-    (async () => {
-      if (Platform.OS !== 'web') {
-        await Audio.requestPermissionsAsync();
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: true,
-          playsInSilentModeIOS: true,
-        });
-      }
-    })();
-  }, []);
+export default function RecallGameScreen({ navigation }) {
+  const [phase, setPhase] = useState("memorize"); // 'memorize', 'recall', 'success', 'try_again'
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
-  const startRecording = async () => {
-    try {
-      setResult(null);
-      setIsRecording(true);
-      
-      if (Platform.OS === 'web') {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const recorder = new MediaRecorder(stream);
-        let chunks = [];
-        
-        recorder.ondataavailable = (e) => {
-          if (e.data.size > 0) chunks.push(e.data);
-        };
-        
-        recorder.onstop = async () => {
-          const blob = new Blob(chunks, { type: 'audio/webm' });
-          await uploadAudio(blob);
-        };
-        
-        recorder.start();
-        setMediaRecorder(recorder);
-        
-      } else {
-        const { recording } = await Audio.Recording.createAsync( Audio.RecordingOptionsPresets.HIGH_QUALITY );
-        setRecording(recording);
-      }
-    } catch (err) {
-      console.error('Failed to start recording', err);
-      setIsRecording(false);
+  const handleContinue = () => {
+    setPhase("recall");
+  };
+
+  const handleSelect = (id) => {
+    setSelectedAnswer(id);
+    if (id === GAME_DATA.targetAnswer) {
+      setPhase("success");
+    } else {
+      setPhase("try_again");
     }
   };
 
-  const stopRecording = async () => {
-    setIsRecording(false);
-    
-    if (Platform.OS === 'web' && mediaRecorder) {
-      mediaRecorder.stop();
-      mediaRecorder.stream.getTracks().forEach(t => t.stop());
-      setMediaRecorder(null);
-    } else if (recording) {
-      await recording.stopAndUnloadAsync();
-      const uri = recording.getURI();
-      setRecording(undefined);
-      
-      // Convert URI to blob/file for upload
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      await uploadAudio(blob);
-    }
-  };
-
-  const uploadAudio = async (blob) => {
-    setIsProcessing(true);
-    try {
-      const formData = new FormData();
-      formData.append('audio', blob, 'recording.webm');
-      
-      const res = await axios.post('http://localhost:4000/api/games/recall/submit', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      
-      setResult(res.data);
-    } catch (error) {
-      console.warn("Upload failed. Showing fallback for prototype.", error);
-      // Fallback for prototype testing if backend is offline or strict about mime types
-      setTimeout(() => {
-        setResult({
-          text: "I remember there was a boy stealing cookies.",
-          biomarkers: { ttr: 0.8, pause_count: 2, word_count: 8 }
-        });
-      }, 1500);
-    } finally {
-      setIsProcessing(false);
-    }
+  const resetGame = () => {
+    setSelectedAnswer(null);
+    setPhase("memorize"); // In a real app, load new data here
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.instruction}>
-        Listen to the story from your caregiver. When you are ready, press the button below to retell the story in your own words.
-      </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.closeButton}
+        >
+          <Feather name="x" size={32} color={Colors.primary} />
+        </TouchableOpacity>
+      </View>
 
-      {isProcessing ? (
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#00695C" />
-          <Text style={styles.infoText}>Analyzing your voice...</Text>
-        </View>
-      ) : result ? (
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultTitle}>Activity Completed</Text>
-          <Text style={styles.transcript}>"{result.text}"</Text>
-          
-          <View style={styles.metricsBox}>
-            <Text style={styles.metricText}>Words spoken: {result.biomarkers?.word_count || 0}</Text>
-            <Text style={styles.metricText}>Vocabulary Richness: {result.biomarkers?.ttr?.toFixed(2) || 0}</Text>
+      <View style={styles.container}>
+        {phase === "memorize" && (
+          <View style={styles.phaseContainer}>
+            <Text style={styles.questionText}>Remember these:</Text>
+
+            <View style={styles.objectsContainer}>
+              {GAME_DATA.objectsToRemember.map((obj) => (
+                <View key={obj.id} style={styles.objectItem}>
+                  <Image source={{ uri: obj.uri }} style={styles.objectImage} />
+                  <Text style={styles.objectName}>{obj.name}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.footer}>
+              <JiriButton title="Continue" onPress={handleContinue} />
+            </View>
           </View>
-          
-          <TouchableOpacity style={styles.secondaryButton} onPress={() => setResult(null)}>
-            <Text style={styles.buttonTextDark}>Try Again</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            style={[styles.primaryButton, isRecording && styles.recordingButton]} 
-            onPress={isRecording ? stopRecording : startRecording}
-          >
-            <Text style={styles.buttonText}>
-              {isRecording ? "Stop Recording Voice" : "Start Recording Voice"}
+        )}
+
+        {phase === "recall" && (
+          <View style={styles.phaseContainer}>
+            <Text style={styles.questionText}>Which one did you see?</Text>
+
+            <View style={styles.optionsContainer}>
+              {GAME_DATA.options.map((opt) => (
+                <TouchableOpacity
+                  key={opt.id}
+                  style={styles.optionButton}
+                  onPress={() => handleSelect(opt.id)}
+                >
+                  <Text style={styles.optionText}>{opt.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Feedback Area (Success / Try Again) */}
+        {(phase === "success" || phase === "try_again") && (
+          <View style={styles.feedbackContainer}>
+            <View
+              style={[
+                styles.iconContainer,
+                {
+                  backgroundColor:
+                    phase === "success" ? Colors.success : Colors.attention,
+                },
+              ]}
+            >
+              <Feather
+                name={phase === "success" ? "check" : "refresh-cw"}
+                size={48}
+                color={Colors.background}
+              />
+            </View>
+            <Text
+              style={[
+                styles.feedbackText,
+                {
+                  color:
+                    phase === "success" ? Colors.success : Colors.attention,
+                },
+              ]}
+            >
+              {phase === "success" ? "Nice!" : "Let's try again."}
             </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+
+            <View style={[styles.footer, { width: "100%" }]}>
+              {phase === "success" ? (
+                <JiriButton title="Next" onPress={() => navigation.goBack()} />
+              ) : (
+                <JiriButton
+                  title="Try again"
+                  variant="secondary"
+                  onPress={() => setPhase("recall")}
+                />
+              )}
+            </View>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  header: {
+    padding: Spacing.m,
+    paddingTop: Spacing.xl,
+    flexDirection: "row",
+  },
+  closeButton: {
+    padding: Spacing.xs,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#FFFDF7',
-    padding: 24,
+    padding: Spacing.xl,
   },
-  instruction: {
+  phaseContainer: {
+    flex: 1,
+  },
+  questionText: {
+    ...Typography.pageTitle,
+    textAlign: "center",
+    marginBottom: Spacing.xxl,
+  },
+  objectsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginBottom: Spacing.xxl,
+  },
+  objectItem: {
+    alignItems: "center",
+  },
+  objectImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: Spacing.s,
+    backgroundColor: Colors.neutral,
+  },
+  objectName: {
+    ...Typography.body,
+    fontWeight: "600",
+  },
+  optionsContainer: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  optionButton: {
+    backgroundColor: Colors.cardBackground,
+    padding: Spacing.l,
+    borderRadius: Layout.borderRadius,
+    marginBottom: Spacing.m,
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: Colors.neutral,
+    ...Layout.shadow,
+  },
+  optionText: {
     fontSize: 24,
-    color: '#2A2A2A',
-    marginBottom: 40,
-    lineHeight: 34,
+    fontWeight: "700",
+    color: Colors.text,
   },
-  centerContainer: {
+  feedbackContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
-  infoText: {
-    fontSize: 20,
-    color: '#2A2A2A',
-    marginTop: 20,
+  iconContainer: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: Spacing.l,
+    ...Layout.shadow,
   },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  feedbackText: {
+    ...Typography.pageTitle,
+    marginBottom: Spacing.xxl * 2,
   },
-  primaryButton: {
-    backgroundColor: '#00695C', 
-    padding: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
+  footer: {
+    marginTop: "auto",
   },
-  recordingButton: {
-    backgroundColor: '#C62828', // Red for active recording
-  },
-  buttonText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-  },
-  resultContainer: {
-    flex: 1,
-  },
-  resultTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2A2A2A',
-    marginBottom: 20,
-  },
-  transcript: {
-    fontSize: 20,
-    color: '#424242',
-    fontStyle: 'italic',
-    marginBottom: 24,
-    lineHeight: 28,
-  },
-  metricsBox: {
-    backgroundColor: '#E0F2F1',
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#B2DFDB',
-    marginBottom: 40,
-  },
-  metricText: {
-    fontSize: 18,
-    color: '#00695C',
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  secondaryButton: {
-    backgroundColor: 'transparent',
-    padding: 24,
-    borderRadius: 12,
-    borderWidth: 3,
-    borderColor: '#00695C',
-    alignItems: 'center',
-  },
-  buttonTextDark: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2A2A2A',
-  }
 });

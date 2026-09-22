@@ -1,151 +1,583 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import axios from 'axios';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
+  Image,
+} from "react-native";
+import { Colors, Typography, Spacing, Layout } from "../utils/DesignSystem";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { JiriButton } from "../components/JiriButton";
 
-export default function CaregiverScreen() {
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchLogs = async () => {
-    try {
-      const res = await axios.get('http://localhost:8000/log');
-      setLogs(res.data);
-    } catch (err) {
-      console.warn("Failed to fetch logs", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchLogs();
-    const interval = setInterval(fetchLogs, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatTime = (isoString) => {
-    const d = new Date(isoString);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
-  const renderItem = ({ item }) => {
-    const isSingify = item.source === 'singify';
-    return (
-      <View style={[styles.logCard, isSingify ? styles.cardSingify : styles.cardJiri]}>
-        <View style={styles.logHeader}>
-          <Text style={styles.timeText}>{formatTime(item.timestamp)}</Text>
-          <View style={[styles.badge, isSingify ? styles.badgeSingify : styles.badgeJiri]}>
-            <Text style={[styles.badgeText, isSingify ? styles.badgeTextSingify : styles.badgeTextJiri]}>
-              {item.source.toUpperCase()}
-            </Text>
-          </View>
-        </View>
-        <Text style={styles.eventTypeText}>{item.event_type.replace(/_/g, ' ')}</Text>
-        <Text style={styles.detailsText}>{item.details}</Text>
-      </View>
-    );
-  };
-
-  if (loading && logs.length === 0) {
-    return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#00695C" />
-      </View>
-    );
-  }
+export default function CaregiverScreen({ navigation }) {
+  const [activeTab, setActiveTab] = useState("act"); // 'understand', 'act', 'refer'
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={logs}
-        keyExtractor={(item, index) => `${item.timestamp}-${index}`}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={<Text style={styles.emptyText}>No events recorded yet.</Text>}
-      />
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.headerTitle}>JOSEPH'S JIRI</Text>
+          <View style={styles.statusBadge}>
+            <View style={styles.statusDot} />
+            <Text style={styles.statusText}>Safe • At Home</Text>
+          </View>
+        </View>
+
+        <View style={styles.headerRight}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => navigation.navigate("Asha")}
+          >
+            <Feather name="bluetooth" size={24} color={Colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton}>
+            <Feather name="settings" size={24} color={Colors.primary} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.tabBar}>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === "understand" && styles.activeTab]}
+          onPress={() => setActiveTab("understand")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "understand" && styles.activeTabText,
+            ]}
+          >
+            UNDERSTAND
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === "act" && styles.activeTab]}
+          onPress={() => setActiveTab("act")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "act" && styles.activeTabText,
+            ]}
+          >
+            ACT
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === "refer" && styles.activeTab]}
+          onPress={() => setActiveTab("refer")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "refer" && styles.activeTabText,
+            ]}
+          >
+            REFER
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+      >
+        {activeTab === "act" && (
+          <>
+            <View style={styles.alertsContainer}>
+              <Text style={styles.sectionTitle}>ALERTS</Text>
+              <View style={styles.alertCard}>
+                <View style={styles.alertIcon}>
+                  <Feather
+                    name="alert-circle"
+                    size={24}
+                    color={Colors.attention}
+                  />
+                </View>
+                <View style={styles.alertTextContainer}>
+                  <Text style={styles.alertText}>
+                    Medicine reminder not acknowledged twice.
+                  </Text>
+                </View>
+                <TouchableOpacity>
+                  <Text style={styles.alertAction}>Review</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.todayContainer}>
+              <View style={styles.rowBetween}>
+                <Text style={styles.sectionTitle}>TODAY</Text>
+                <TouchableOpacity>
+                  <Text style={styles.linkText}>View timeline</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.timelineCard}>
+                <View style={styles.timelineItem}>
+                  <Feather
+                    name="check-circle"
+                    size={20}
+                    color={Colors.success}
+                  />
+                  <Text style={[styles.timelineText, styles.timelineDone]}>
+                    Breakfast completed
+                  </Text>
+                </View>
+                <View style={styles.timelineItem}>
+                  <Feather
+                    name="check-circle"
+                    size={20}
+                    color={Colors.success}
+                  />
+                  <Text style={[styles.timelineText, styles.timelineDone]}>
+                    Medicine acknowledged
+                  </Text>
+                </View>
+                <View style={styles.timelineItem}>
+                  <View style={styles.timelineCircle} />
+                  <Text style={styles.timelineText}>Walk (11:00)</Text>
+                  <View style={styles.nextBadge}>
+                    <Text style={styles.nextText}>NEXT</Text>
+                  </View>
+                </View>
+                <View style={styles.timelineItem}>
+                  <View style={styles.timelineCircle} />
+                  <Text style={styles.timelineText}>Practice</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.rowBetween}>
+              <Text style={styles.sectionTitle}>ROUTINE & TASKS</Text>
+            </View>
+
+            <View style={styles.grid}>
+              <TouchableOpacity style={styles.gridCard}>
+                <Feather
+                  name="edit"
+                  size={28}
+                  color={Colors.primary}
+                  style={{ marginBottom: 8 }}
+                />
+                <Text style={styles.gridCardTitle}>Routine Editor</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.gridCard}>
+                <Ionicons
+                  name="medical"
+                  size={28}
+                  color={Colors.primary}
+                  style={{ marginBottom: 8 }}
+                />
+                <Text style={styles.gridCardTitle}>Medications</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+
+        {activeTab === "understand" && (
+          <>
+            <View style={styles.insightsContainer}>
+              <Text style={styles.sectionTitle}>AI INSIGHTS</Text>
+              <View style={styles.insightCard}>
+                <Text style={styles.insightText}>
+                  Joseph completed all morning routine steps. The medicine
+                  reminder needed two prompts. Practice was completed without
+                  assistance.
+                </Text>
+                <View style={styles.divider} />
+                <View style={styles.insightSuggestion}>
+                  <Ionicons
+                    name="bulb-outline"
+                    size={24}
+                    color={Colors.attention}
+                  />
+                  <Text style={styles.suggestionText}>
+                    The medicine task took longer than usual today.
+                  </Text>
+                </View>
+                <JiriButton title="Review Routine" variant="outline" />
+              </View>
+            </View>
+
+            <View style={styles.rowBetween}>
+              <Text style={styles.sectionTitle}>DATA & REPORTS</Text>
+            </View>
+
+            <View style={styles.grid}>
+              <TouchableOpacity style={styles.gridCard}>
+                <Ionicons
+                  name="stats-chart"
+                  size={28}
+                  color={Colors.primary}
+                  style={{ marginBottom: 8 }}
+                />
+                <Text style={styles.gridCardTitle}>Practice</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.gridCard}>
+                <Ionicons
+                  name="mic"
+                  size={28}
+                  color={Colors.primary}
+                  style={{ marginBottom: 8 }}
+                />
+                <Text style={styles.gridCardTitle}>Voice Journal</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.insightsContainer}>
+              <Text style={styles.sectionTitle}>CARE LIBRARY</Text>
+              <TouchableOpacity style={styles.libraryCard}>
+                <Text style={styles.libraryTitle}>Communication tips</Text>
+                <Feather
+                  name="chevron-right"
+                  size={24}
+                  color={Colors.secondaryText}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.libraryCard}>
+                <Text style={styles.libraryTitle}>Understanding wandering</Text>
+                <Feather
+                  name="chevron-right"
+                  size={24}
+                  color={Colors.secondaryText}
+                />
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+
+        {activeTab === "refer" && (
+          <>
+            <Text style={styles.sectionTitle}>NEED CLINICAL SUPPORT?</Text>
+            <View style={styles.referralCard}>
+              <Text style={styles.referralDesc}>
+                JIRI helps manage daily care, but it does not replace medical
+                advice. If you notice significant changes, connect with the care
+                network.
+              </Text>
+
+              <TouchableOpacity style={styles.contactItem}>
+                <View style={styles.contactIcon}>
+                  <Ionicons name="person" size={24} color={Colors.primary} />
+                </View>
+                <View style={styles.contactInfo}>
+                  <Text style={styles.contactTitle}>Anita (ASHA Worker)</Text>
+                  <Text style={styles.contactSubtitle}>Community Health</Text>
+                </View>
+                <Ionicons name="call" size={24} color={Colors.primary} />
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.contactItem}>
+                <View style={styles.contactIcon}>
+                  <Ionicons name="medical" size={24} color={Colors.primary} />
+                </View>
+                <View style={styles.contactInfo}>
+                  <Text style={styles.contactTitle}>Primary Health Centre</Text>
+                  <Text style={styles.contactSubtitle}>District 4</Text>
+                </View>
+                <Ionicons name="call" size={24} color={Colors.primary} />
+              </TouchableOpacity>
+
+              <JiriButton
+                title="Create Care Note for ASHA"
+                style={{ marginTop: Spacing.l }}
+              />
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: '#FFFDF7',
+    backgroundColor: Colors.background,
   },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFDF7',
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    padding: Spacing.m,
+    paddingTop: Spacing.xl,
+    backgroundColor: Colors.background,
   },
-  listContent: {
-    padding: 16,
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "800",
+    color: Colors.text,
+    letterSpacing: -0.5,
   },
-  emptyText: {
-    fontSize: 18,
-    color: '#757575',
-    textAlign: 'center',
-    marginTop: 40,
-  },
-  logCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderLeftWidth: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  cardJiri: {
-    borderLeftColor: '#1976D2',
-  },
-  cardSingify: {
-    borderLeftColor: '#C2185B',
-  },
-  logHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  timeText: {
-    fontSize: 16,
-    color: '#757575',
-    fontWeight: '500',
-  },
-  badge: {
-    paddingHorizontal: 10,
+  statusBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#E8F5E9",
+    paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
+    marginTop: 4,
+    alignSelf: "flex-start",
   },
-  badgeJiri: {
-    backgroundColor: '#E3F2FD',
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.success,
+    marginRight: 6,
   },
-  badgeSingify: {
-    backgroundColor: '#FCE4EC',
-  },
-  badgeText: {
+  statusText: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "700",
+    color: Colors.success,
   },
-  badgeTextJiri: {
-    color: '#1976D2',
+  headerRight: {
+    flexDirection: "row",
   },
-  badgeTextSingify: {
-    color: '#C2185B',
+  iconButton: {
+    padding: Spacing.xs,
+    marginLeft: Spacing.s,
+    backgroundColor: Colors.neutral,
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  eventTypeText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2A2A2A',
-    marginBottom: 4,
+  tabBar: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.neutral,
   },
-  detailsText: {
-    fontSize: 16,
-    color: '#424242',
+  tab: {
+    flex: 1,
+    paddingVertical: Spacing.m,
+    alignItems: "center",
+    borderBottomWidth: 3,
+    borderBottomColor: "transparent",
+  },
+  activeTab: {
+    borderBottomColor: Colors.primary,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: Colors.secondaryText,
+    letterSpacing: 1,
+  },
+  activeTabText: {
+    color: Colors.primary,
+  },
+  container: {
+    flex: 1,
+  },
+  content: {
+    padding: Spacing.m,
+    paddingBottom: Spacing.xxl,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: Colors.secondaryText,
+    letterSpacing: 1,
+    marginBottom: Spacing.m,
+    marginTop: Spacing.l,
+  },
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+  },
+  linkText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: Colors.primary,
+    marginBottom: Spacing.m,
+  },
+  alertsContainer: {
+    marginBottom: Spacing.m,
+  },
+  alertCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF3E0", // Light orange
+    padding: Spacing.m,
+    borderRadius: Layout.borderRadius,
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.attention,
+  },
+  alertIcon: {
+    marginRight: Spacing.m,
+  },
+  alertTextContainer: {
+    flex: 1,
+  },
+  alertText: {
+    ...Typography.body,
+    fontWeight: "600",
+    color: "#E65100", // Dark orange
+  },
+  alertAction: {
+    fontWeight: "700",
+    color: Colors.attention,
+    marginLeft: Spacing.s,
+  },
+  todayContainer: {
+    marginBottom: Spacing.l,
+  },
+  timelineCard: {
+    backgroundColor: Colors.cardBackground,
+    padding: Spacing.l,
+    borderRadius: Layout.borderRadius,
+    borderWidth: 1,
+    borderColor: Colors.neutral,
+  },
+  timelineItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: Spacing.m,
+  },
+  timelineCircle: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: Colors.secondaryText,
+    marginHorizontal: 2,
+  },
+  timelineText: {
+    ...Typography.body,
+    fontWeight: "600",
+    marginLeft: Spacing.m,
+  },
+  timelineDone: {
+    color: Colors.secondaryText,
+    textDecorationLine: "line-through",
+  },
+  nextBadge: {
+    backgroundColor: Colors.blockLightBlue,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginLeft: Spacing.s,
+  },
+  nextText: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: Colors.primary,
+  },
+  grid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+  },
+  gridCard: {
+    width: "48%",
+    backgroundColor: Colors.cardBackground,
+    padding: Spacing.l,
+    borderRadius: Layout.borderRadius,
+    borderWidth: 1,
+    borderColor: Colors.neutral,
+    alignItems: "center",
+    marginBottom: Spacing.m,
+    ...Layout.shadow,
+  },
+  gridCardTitle: {
+    ...Typography.body,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  insightsContainer: {
+    marginBottom: Spacing.m,
+  },
+  insightCard: {
+    backgroundColor: Colors.cardBackground,
+    padding: Spacing.l,
+    borderRadius: Layout.borderRadius,
+    borderWidth: 1,
+    borderColor: Colors.neutral,
+  },
+  insightText: {
+    ...Typography.body,
     lineHeight: 24,
-  }
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.neutral,
+    marginVertical: Spacing.l,
+  },
+  insightSuggestion: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF8E1",
+    padding: Spacing.m,
+    borderRadius: Layout.borderRadius,
+    marginBottom: Spacing.l,
+  },
+  suggestionText: {
+    flex: 1,
+    ...Typography.body,
+    fontWeight: "600",
+    marginLeft: Spacing.m,
+    color: "#FF8F00",
+  },
+  libraryCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: Colors.cardBackground,
+    padding: Spacing.l,
+    borderRadius: Layout.borderRadius,
+    borderWidth: 1,
+    borderColor: Colors.neutral,
+    marginBottom: Spacing.s,
+  },
+  libraryTitle: {
+    ...Typography.body,
+    fontWeight: "600",
+  },
+  referralCard: {
+    backgroundColor: Colors.cardBackground,
+    padding: Spacing.l,
+    borderRadius: Layout.borderRadius,
+    borderWidth: 1,
+    borderColor: Colors.neutral,
+  },
+  referralDesc: {
+    ...Typography.body,
+    color: Colors.secondaryText,
+    marginBottom: Spacing.xl,
+    lineHeight: 22,
+  },
+  contactItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: Spacing.m,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.neutral,
+  },
+  contactIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.blockLightBlue,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: Spacing.m,
+  },
+  contactInfo: {
+    flex: 1,
+  },
+  contactTitle: {
+    ...Typography.body,
+    fontWeight: "700",
+  },
+  contactSubtitle: {
+    fontSize: 14,
+    color: Colors.secondaryText,
+  },
 });

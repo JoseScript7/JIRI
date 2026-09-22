@@ -1,148 +1,335 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import axios from 'axios';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  SafeAreaView,
+} from "react-native";
+import { Colors, Typography, Spacing, Layout } from "../utils/DesignSystem";
+import { JiriButton } from "../components/JiriButton";
+import { Feather, Ionicons } from "@expo/vector-icons";
 
-export default function MemoryGameScreen() {
-  const [words, setWords] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const [loading, setLoading] = useState(false);
-  const [finished, setFinished] = useState(false);
+// Mock data
+const GAME_DATA = {
+  sequence: [
+    {
+      id: 1,
+      name: "Cup",
+      uri: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=200&h=200&fit=crop",
+    },
+    {
+      id: 2,
+      name: "Cloth",
+      uri: "https://images.unsplash.com/photo-1584050218779-786d790f9eec?w=200&h=200&fit=crop",
+    },
+    {
+      id: 3,
+      name: "Drum",
+      uri: "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=200&h=200&fit=crop",
+    },
+  ],
+};
 
-  // Fetch words directly from the backend
-  const fetchWords = async () => {
-    setLoading(true);
-    try {
-      // In a real app, use the actual IP of the machine if not running web
-      const res = await axios.get('http://localhost:4000/api/games/memory');
-      setWords(res.data.words || ['Apple', 'Book', 'Car']);
-      setCurrentIndex(0);
-      setFinished(false);
-    } catch (err) {
-      console.warn("Failed to fetch words, using fallbacks.", err);
-      setWords(['Apple', 'Book', 'Car']);
-      setCurrentIndex(0);
-      setFinished(false);
-    } finally {
-      setLoading(false);
+export default function MemoryGameScreen({ navigation }) {
+  const [phase, setPhase] = useState("memorize"); // 'memorize', 'reproduce', 'success', 'try_again'
+  const [userSequence, setUserSequence] = useState([]);
+
+  const handleContinue = () => {
+    setPhase("reproduce");
+  };
+
+  const handleSelect = (obj) => {
+    const newSeq = [...userSequence, obj];
+    setUserSequence(newSeq);
+
+    if (newSeq.length === GAME_DATA.sequence.length) {
+      // Check if correct
+      const isCorrect = newSeq.every(
+        (val, index) => val.id === GAME_DATA.sequence[index].id,
+      );
+      if (isCorrect) {
+        setPhase("success");
+      } else {
+        setPhase("try_again");
+      }
     }
   };
 
-  const nextWord = () => {
-    if (currentIndex < words.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      setFinished(true);
-    }
+  const resetGame = () => {
+    setUserSequence([]);
+    setPhase("memorize");
   };
 
-  if (loading) {
-    return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#00695C" />
-        <Text style={styles.infoText}>Loading words...</Text>
-      </View>
-    );
-  }
+  const retryReproduce = () => {
+    setUserSequence([]);
+    setPhase("reproduce");
+  };
 
-  // Initial State
-  if (currentIndex === -1) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.instruction}>You will see a list of words one by one. Try to remember them.</Text>
-        <TouchableOpacity style={styles.primaryButton} onPress={fetchWords} accessibilityLabel="Start Activity">
-          <Text style={styles.buttonText}>Start Activity</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  // Finished State
-  if (finished) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.instruction}>That was the last word.</Text>
-        <Text style={styles.instruction}>Please tell your caregiver the words you remember.</Text>
-        
-        <TouchableOpacity style={styles.secondaryButton} onPress={() => setCurrentIndex(-1)} accessibilityLabel="Restart Activity">
-          <Text style={styles.buttonTextDark}>Restart Activity</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  // Active State: Showing one word at a time, large and high contrast (COGA Guidelines)
   return (
-    <View style={styles.container}>
-      <View style={styles.wordContainer}>
-        <Text style={styles.wordText}>{words[currentIndex]}</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.closeButton}
+        >
+          <Feather name="x" size={32} color={Colors.primary} />
+        </TouchableOpacity>
       </View>
-      
-      <TouchableOpacity style={styles.primaryButton} onPress={nextWord} accessibilityLabel="Show Next Word">
-        <Text style={styles.buttonText}>Show Next Word</Text>
-      </TouchableOpacity>
-    </View>
+
+      <View style={styles.container}>
+        {phase === "memorize" && (
+          <View style={styles.phaseContainer}>
+            <Text style={styles.questionText}>Remember this order</Text>
+
+            <View style={styles.sequenceContainer}>
+              {GAME_DATA.sequence.map((obj, index) => (
+                <View key={obj.id} style={styles.sequenceItemRow}>
+                  <Text style={styles.numberText}>{index + 1} ➔</Text>
+                  <Image
+                    source={{ uri: obj.uri }}
+                    style={styles.objectImageSmall}
+                  />
+                  <Text style={styles.objectName}>{obj.name}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.footer}>
+              <JiriButton title="Continue" onPress={handleContinue} />
+            </View>
+          </View>
+        )}
+
+        {phase === "reproduce" && (
+          <View style={styles.phaseContainer}>
+            <Text style={styles.questionText}>Tap them in order</Text>
+
+            {/* Answer Slots */}
+            <View style={styles.slotsContainer}>
+              {GAME_DATA.sequence.map((_, i) => (
+                <View key={i} style={styles.slot}>
+                  {userSequence[i] ? (
+                    <Image
+                      source={{ uri: userSequence[i].uri }}
+                      style={styles.slotImage}
+                    />
+                  ) : (
+                    <Text style={styles.slotNumber}>{i + 1}</Text>
+                  )}
+                </View>
+              ))}
+            </View>
+
+            {/* Options (shuffled in real app) */}
+            <View style={styles.optionsContainer}>
+              {[...GAME_DATA.sequence]
+                .sort((a, b) => b.id - a.id)
+                .map((obj) => {
+                  const isSelected = userSequence.some(
+                    (item) => item.id === obj.id,
+                  );
+                  return (
+                    <TouchableOpacity
+                      key={obj.id}
+                      style={[
+                        styles.optionCard,
+                        isSelected && styles.optionCardDisabled,
+                      ]}
+                      onPress={() => !isSelected && handleSelect(obj)}
+                      disabled={isSelected}
+                    >
+                      <Image
+                        source={{ uri: obj.uri }}
+                        style={[
+                          styles.optionImage,
+                          isSelected && { opacity: 0.3 },
+                        ]}
+                      />
+                      <Text
+                        style={[
+                          styles.optionName,
+                          isSelected && { color: Colors.secondaryText },
+                        ]}
+                      >
+                        {obj.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+            </View>
+          </View>
+        )}
+
+        {/* Feedback Area */}
+        {(phase === "success" || phase === "try_again") && (
+          <View style={styles.feedbackContainer}>
+            <View
+              style={[
+                styles.iconContainer,
+                {
+                  backgroundColor:
+                    phase === "success" ? Colors.success : Colors.attention,
+                },
+              ]}
+            >
+              <Feather
+                name={phase === "success" ? "check" : "refresh-cw"}
+                size={48}
+                color={Colors.background}
+              />
+            </View>
+            <Text
+              style={[
+                styles.feedbackText,
+                {
+                  color:
+                    phase === "success" ? Colors.success : Colors.attention,
+                },
+              ]}
+            >
+              {phase === "success" ? "Nice!" : "Let's try again."}
+            </Text>
+
+            <View style={[styles.footer, { width: "100%" }]}>
+              {phase === "success" ? (
+                <JiriButton title="Next" onPress={() => navigation.goBack()} />
+              ) : (
+                <JiriButton
+                  title="Try again"
+                  variant="secondary"
+                  onPress={retryReproduce}
+                />
+              )}
+            </View>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  header: {
+    padding: Spacing.m,
+    paddingTop: Spacing.xl,
+    flexDirection: "row",
+  },
+  closeButton: {
+    padding: Spacing.xs,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#FFFDF7',
-    padding: 24,
-    justifyContent: 'center',
+    padding: Spacing.xl,
   },
-  centerContainer: {
+  phaseContainer: {
     flex: 1,
-    backgroundColor: '#FFFDF7',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  instruction: {
+  questionText: {
+    ...Typography.pageTitle,
+    textAlign: "center",
+    marginBottom: Spacing.xxl,
+  },
+  sequenceContainer: {
+    alignItems: "center",
+  },
+  sequenceItemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: Spacing.l,
+    width: 200,
+  },
+  numberText: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: Colors.primary,
+    marginRight: Spacing.l,
+    width: 60,
+  },
+  objectImageSmall: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    marginRight: Spacing.m,
+    backgroundColor: Colors.neutral,
+  },
+  objectName: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: Colors.text,
+  },
+  slotsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: Spacing.xxl * 1.5,
+  },
+  slot: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: Colors.neutral,
+    borderStyle: "dashed",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.cardBackground,
+  },
+  slotNumber: {
     fontSize: 24,
-    color: '#2A2A2A',
-    marginBottom: 40,
-    lineHeight: 34,
-    textAlign: 'left', // Left aligned to avoid "rivers of white"
+    fontWeight: "700",
+    color: Colors.secondaryText,
   },
-  infoText: {
-    fontSize: 20,
-    color: '#2A2A2A',
-    marginTop: 20,
+  slotImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 40,
   },
-  wordContainer: {
+  optionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  optionCard: {
+    alignItems: "center",
+    width: "30%",
+  },
+  optionCardDisabled: {
+    opacity: 0.5,
+  },
+  optionImage: {
+    width: 80,
+    height: 80,
+    borderRadius: Layout.borderRadius,
+    marginBottom: Spacing.xs,
+    backgroundColor: Colors.neutral,
+  },
+  optionName: {
+    ...Typography.body,
+    fontWeight: "600",
+  },
+  feedbackContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
-  wordText: {
-    fontSize: 64, // Massive typography for low vision
-    fontWeight: 'bold',
-    color: '#2A2A2A',
+  iconContainer: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: Spacing.l,
+    ...Layout.shadow,
   },
-  primaryButton: {
-    backgroundColor: '#00695C', // Deep teal
-    padding: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 20,
+  feedbackText: {
+    ...Typography.pageTitle,
+    marginBottom: Spacing.xxl * 2,
   },
-  secondaryButton: {
-    backgroundColor: 'transparent',
-    padding: 24,
-    borderRadius: 12,
-    borderWidth: 3,
-    borderColor: '#00695C',
-    alignItems: 'center',
-    marginBottom: 20,
+  footer: {
+    marginTop: "auto",
   },
-  buttonText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF', // High contrast white on teal
-  },
-  buttonTextDark: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2A2A2A',
-  }
 });
