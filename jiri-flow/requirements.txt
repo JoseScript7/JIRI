@@ -1,0 +1,12 @@
+qai_hub_models
+onnxruntime-qnn
+opencv-python
+sounddevice
+numpy
+pydantic
+fastapi
+uvicorn
+ultralytics
+transformers
+pyttsx3
+nltk

@@ -1,0 +1,14 @@
+{
+  "id": "test_routine",
+  "name": "Test Routine",
+  "steps": [
+    {
+      "id": "step_1",
+      "name": "step 1",
+      "required_objects": [
+        "person"
+      ],
+      "order": 1
+    }
+  ]
+}

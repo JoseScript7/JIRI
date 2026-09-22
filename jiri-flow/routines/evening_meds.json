@@ -1,0 +1,40 @@
+{
+  "id": "evening_meds",
+  "name": "Evening Medication",
+  "steps": [
+    {
+      "id": "step_1",
+      "name": "get medication box",
+      "required_objects": [
+        "medication box"
+      ],
+      "order": 1
+    },
+    {
+      "id": "step_2",
+      "name": "open medication box",
+      "required_objects": [
+        "medication box",
+        "person"
+      ],
+      "order": 2
+    },
+    {
+      "id": "step_3",
+      "name": "get water bottle",
+      "required_objects": [
+        "bottle"
+      ],
+      "order": 3
+    },
+    {
+      "id": "step_4",
+      "name": "take medication",
+      "required_objects": [
+        "bottle",
+        "person"
+      ],
+      "order": 4
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "rt_morning_tea_01",
+  "name": "Morning Tea",
+  "steps": [
+    {
+      "id": "step_1",
+      "name": "fill kettle",
+      "required_objects": ["kettle"],
+      "order": 1
+    },
+    {
+      "id": "step_2",
+      "name": "boil water",
+      "required_objects": ["kettle", "person"],
+      "order": 2
+    },
+    {
+      "id": "step_3",
+      "name": "place cup",
+      "required_objects": ["cup"],
+      "order": 3
+    },
+    {
+      "id": "step_4",
+      "name": "add tea bag",
+      "required_objects": ["cup", "spoon"],
+      "order": 4
+    },
+    {
+      "id": "step_5",
+      "name": "pour water",
+      "required_objects": ["cup", "kettle"],
+      "order": 5
+    }
+  ]
+}
